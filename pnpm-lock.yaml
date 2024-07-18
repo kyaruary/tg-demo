@@ -8,6 +8,9 @@ dependencies:
   '@tonconnect/ui-react':
     specifier: ^2.0.6
     version: 2.0.6(react-dom@18.3.1)(react@18.3.1)
+  js-sha256:
+    specifier: ^0.11.0
+    version: 0.11.0
   react:
     specifier: ^18.3.1
     version: 18.3.1
@@ -1895,6 +1898,10 @@ packages:
       reflect.getprototypeof: 1.0.6
       set-function-name: 2.0.2
     dev: true
+
+  /js-sha256@0.11.0:
+    resolution: {integrity: sha512-6xNlKayMZvds9h1Y1VWc0fQHQ82BxTXizWPEtEeGvmOUYpBRy4gbWroHLpzowe6xiQhHpelCQiE7HEdznyBL9Q==}
+    dev: false
 
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
