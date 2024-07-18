@@ -13,12 +13,6 @@ export function TonWallet() {
         tonConnectUI.setConnectRequestParameters({
             state: "loading",
         });
-        // tonConnectUI.uiOptions = {
-        //   actionsConfiguration: {
-        //     returnStrategy: 'none',
-        //     twaReturnUrl: 'https://t.me/ChatCoinAppBot/chat',
-        //   },
-        // };
         open();
         const response = await fetch("https://gonesis-backend.dev.nftgo.dev/api/v1/login/ton/params");
         const json = await response.json();

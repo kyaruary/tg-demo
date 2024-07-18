@@ -9,7 +9,8 @@ function App() {
             restoreConnection={false}
             enableAndroidBackHandler={false}
             actionsConfiguration={{
-                twaReturnUrl: "https://t.me/ChatCoinAppBot",
+                returnStrategy: "none",
+                twaReturnUrl: "https://t.me/gonesis_ai_bot/chat",
             }}
         >
             <TonWallet />
