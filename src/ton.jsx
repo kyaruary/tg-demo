@@ -1,93 +1,73 @@
-import { useTonAddress, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
-import { useCallback } from "react";
-import { useRef } from "react";
-import { buildSignature } from "./build-sign";
+import { useIsConnectionRestored, useTonAddress, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useMemo } from "react";
+import { usePayload } from "./use-payload";
 
 export function TonWallet() {
-    const init = useRef(true);
     const [tonConnectUI] = useTonConnectUI();
     const address = useTonAddress(true);
     const wallet = useTonWallet();
-    const [authorized, setAuthorized] = useState(false);
+    const isConnectionRestored = useIsConnectionRestored();
+    const connected = tonConnectUI.connected;
+    const [verifying, setVerifying] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const { hasPayload } = usePayload();
 
-    const getPayload = useCallback(async () => {
-        if (init.current) {
-            init.current = false;
-            tonConnectUI.setConnectRequestParameters({
-                state: "loading",
-            });
-        }
-        const xTimestamp = `${Date.now()}`;
-        const response = await fetch("https://gonesis-backend.dev.nftgo.dev/api/v1/login/ton/params", {
-            headers: {
-                "x-timestamp": xTimestamp,
-                "x-signature": buildSignature({}, xTimestamp),
-            },
-        });
-        const json = await response.json();
-        const payload = json.data ?? undefined;
-        console.log("get payload", payload);
-        if (payload) {
-            tonConnectUI.setConnectRequestParameters({
-                state: "ready",
-                value: {
-                    tonProof: payload,
-                },
-            });
-        } else {
-            tonConnectUI.setConnectRequestParameters(null);
-        }
-    }, [tonConnectUI]);
-
-    if (init.current) {
-        getPayload();
-    }
-
-    const handleClick = () => {
+    const handleClick = async () => {
         if (tonConnectUI.connected) {
-            // pass
-        } else {
-            tonConnectUI.modal.open();
+            await tonConnectUI.disconnect();
         }
+        tonConnectUI.modal.open();
     };
 
+    const loading = useMemo(() => {
+        if (success) {
+            return false;
+        }
+        if (verifying) {
+            return true;
+        }
+        return isConnectionRestored === false || !hasPayload || connected;
+    }, [connected, hasPayload, isConnectionRestored, success, verifying]);
+
+    const text = useMemo(() => {
+        if (verifying) {
+            return "Connecting...";
+        }
+        return "Connect Wallet";
+    }, [verifying]);
+
     useEffect(() => {
-        tonConnectUI.onStatusChange((wallet) => {
-            if (wallet) {
-                if (!wallet?.connectItems?.tonProof?.proof) {
+        if (isConnectionRestored === false || !tonConnectUI.connected) {
+            return;
+        }
+        if (wallet) {
+            if (!wallet?.connectItems?.tonProof?.proof) {
+                if (tonConnectUI.connected) {
                     tonConnectUI.disconnect();
-                } else {
-                    setAuthorized(true);
                 }
+            } else {
+                setVerifying(true);
+                setTimeout(() => {
+                    setVerifying(false);
+                    setSuccess(true);
+                }, 10 * 1000);
             }
-
-            // if (!wallet) {
-            //     setAuthorized(false);
-            // }
-            // if (wallet.connectItems?.tonProof && "proof" in wallet.connectItems.tonProof) {
-            //     console.log("has authorized");
-            // }
-
-            // if (!wallet.accessToken) {
-            //     console.log("no signature");
-            //     tonConnectUI.disconnect();
-            //     setAuthorized(false);
-            //     return;
-            // }
-
-            // setAuthorized(true);
-        });
-    }, [tonConnectUI]);
+        }
+    }, [isConnectionRestored, tonConnectUI, wallet]);
 
     return (
         <>
-            <button onClick={handleClick}>Connect Wallet</button>
+            <button onClick={handleClick}>
+                {loading ? "loading..." : ""}
+                {text}
+            </button>
             <p>{address ?? "--"}</p>
-            <p>{authorized ? "authorized" : "not - authorized"}</p>
             <p>{wallet?.connectItems?.tonProof.proof?.signature}</p>
-            <p>{tonConnectUI.connected ? "connected" : "not - connected"}</p>
+            <p>{connected ? "connected" : "not - connected"}</p>
+            <p>{success ? "login success" : null}</p>
+            <input type="text" placeholder="Amount" />
         </>
     );
 }
