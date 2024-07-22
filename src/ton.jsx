@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useMemo } from "react";
 import { usePayload } from "./use-payload";
+import { postEvent } from "@telegram-apps/sdk";
 
 export function TonWallet() {
     const [tonConnectUI] = useTonConnectUI();
@@ -56,6 +57,15 @@ export function TonWallet() {
             }
         }
     }, [isConnectionRestored, tonConnectUI, wallet]);
+
+    useEffect(() => {
+        postEvent("web_app_set_background_color", {
+            color: "#242424",
+        });
+        postEvent("web_app_set_header_color", {
+            color_key: "secondary_bg_color",
+        });
+    }, []);
 
     return (
         <>
