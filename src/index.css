@@ -10,6 +10,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
+    overflow: hidden;
 }
 
 body {
@@ -30,6 +31,7 @@ body {
     flex-direction: column;
     box-sizing: border-box;
     padding-bottom: env(safe-area-inset-bottom);
+    overflow: hidden;
 }
 
 .content {
@@ -40,4 +42,5 @@ body {
     height: 40px;
     flex-shrink: 0;
     background-color: yellowgreen;
+    padding-bottom: env(safe-area-inset-bottom);
 }
