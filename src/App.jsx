@@ -1,19 +1,10 @@
-import "./App.css";
-import { TonConnectUIProvider } from "@tonconnect/ui-react";
-import { TonWallet } from "./ton";
+import "./app.css";
 
-function App() {
+export default function App() {
     return (
-        <TonConnectUIProvider
-            manifestUrl="https://gonesis-backend.dev.nftgo.dev/ton/manifest.json"
-            enableAndroidBackHandler={false}
-            actionsConfiguration={{
-                twaReturnUrl: "https://t.me/gonesis_ai_bot/chat",
-            }}
-        >
-            <TonWallet />
-        </TonConnectUIProvider>
+        <div className="container">
+            <div className="content"></div>
+            <div className="footer"></div>
+        </div>
     );
 }
-
-export default App;
